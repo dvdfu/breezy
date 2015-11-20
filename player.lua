@@ -2,7 +2,8 @@ local Class = require('middleclass')
 local Player = Class('Player')
 
 Player.static.gravity = 0.01
-Player.static.maxSpeed = 2
+Player.static.maxSpeed = 1
+Player.static.sprSeed = love.graphics.newImage('assets/seed.png')
 
 function Player:initialize()
     self.x, self.y = 160, 160
@@ -11,6 +12,9 @@ end
 
 function Player:update(dt)
     if Input:isDown() then
+        if self.vy > 0 then
+            self.vy = 0
+        end
         self.vy = self.vy - Player.gravity
         if self.vy < -Player.maxSpeed then
             self.vy = -Player.maxSpeed
@@ -30,7 +34,7 @@ function Player:update(dt)
 end
 
 function Player:draw()
-    love.graphics.circle('fill', self.x, self.y, 16, 16*4)
+    love.graphics.draw(Player.sprSeed, self.x-4, self.y-4)
 end
 
 return Player

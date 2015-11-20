@@ -1,5 +1,3 @@
-love.mouse.setVisible(false)
-
 local Vector = require('modules/hump/vector')
 local Input = {}
 
