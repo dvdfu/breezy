@@ -1,0 +1,6 @@
+[submodule "modules/middleclass"]
+	path = modules/middleclass
+	url = git@github.com:kikito/middleclass.git
+[submodule "modules/hump"]
+	path = modules/hump
+	url = git@github.com:vrld/hump.git
