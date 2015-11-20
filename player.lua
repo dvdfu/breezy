@@ -12,9 +12,6 @@ end
 
 function Player:update(dt)
     if Input:isDown() then
-        if self.vy > 0 then
-            self.vy = 0
-        end
         self.vy = self.vy - Player.gravity
         if self.vy < -Player.maxSpeed then
             self.vy = -Player.maxSpeed
