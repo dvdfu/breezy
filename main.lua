@@ -41,3 +41,9 @@ function love.draw()
     love.graphics.draw(canvas)
     love.graphics.setShader()
 end
+
+function love.keypressed(k)
+    if k == 'escape' then
+        love.event.quit()
+    end
+end
