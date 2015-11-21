@@ -3,6 +3,7 @@ love.graphics.setBackgroundColor(120, 190, 220)
 
 Gamestate = require('gamestate')
 Level = require('level')
+Menu = require('menu')
 Input = require('input')
 
 function love.load()

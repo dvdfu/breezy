@@ -6,10 +6,10 @@ Player.static.xAcc = 0.01
 Player.static.ySpeedMax = 0.5
 Player.static.xSpeedMin = 0.5
 Player.static.xSpeedMax = 2
-Player.static.sprSeed = love.graphics.newImage('assets/seed.png')
+Player.static.sprSeed = love.graphics.newImage('assets/images/seed.png')
 
 function Player:initialize()
-    self.x, self.y = 160, 160
+    self.x, self.y = 160, 320
     self.vx, self.vy = 0.3, 0
     self.grounded = false
 end
