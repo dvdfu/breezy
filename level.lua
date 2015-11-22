@@ -23,7 +23,7 @@ function Level:enter()
 end
 
 function Level:update(dt)
-    world:update(dt)
+    world:update(1/60)
     self.x = self.x - self.player.vx
     self.player:update(dt)
 
@@ -52,9 +52,9 @@ function Level:drawBodies()
         for _, fixture in pairs(body:getFixtureList()) do
             local shape = fixture:getShape()
             if shape:getType() == 'circle' then
-                love.graphics.circle('fill', body:getX(), body:getY(), shape:getRadius())
+                love.graphics.circle('line', body:getX(), body:getY(), shape:getRadius())
             elseif shape:getType() == 'polygon' then
-                love.graphics.polygon('fill', body:getWorldPoints(shape:getPoints()))
+                love.graphics.polygon('line', body:getWorldPoints(shape:getPoints()))
             end
         end
     end
