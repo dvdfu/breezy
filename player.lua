@@ -4,27 +4,48 @@ local Player = Class('Player')
 Player.static.sprSeed = love.graphics.newImage('assets/images/seed.png')
 
 function Player:initialize(world, x, y)
-    self.vx, self.vy = 0.5, 0
+    self.ax = 0.05
+    self.ground = nil
     self.grounded = false
+    self.locked = false
+    self.contact = {}
 
     self.puff = {}
     self.puff.body = love.physics.newBody(world, x, y, 'dynamic')
+    self.puff.body:setLinearDamping(1)
     self.puff.shape = love.physics.newCircleShape(6)
     self.puff.fixture = love.physics.newFixture(self.puff.body, self.puff.shape, 0.1)
+    self.puff.fixture:setSensor(true)
 
     self.seed = {}
     self.seed.body = love.physics.newBody(world, x, y, 'dynamic')
     self.seed.shape = love.physics.newCircleShape(1)
     self.seed.fixture = love.physics.newFixture(self.seed.body, self.seed.shape, 0.1)
+    self.seed.fixture:setUserData({
+        name = 'seed',
+        callback = function(other) self:collide(other) end
+    })
 
     self.stem = makeRope(world, self.puff.body, self.seed.body)
 end
 
 function Player:update(dt)
-    self.puff.body:setX(160)
-    if Input:isDown() then
-        self.puff.body:applyForce(0, -0.5)
-        self.seed.body:applyForce(-0.001, 0)
+    self.puff.body:applyForce(0, -1.8)
+    if self.grounded then
+        self.seed.body:setPosition(self.contact.x, self.contact.y)
+        if not self.locked then
+            love.physics.newRevoluteJoint(self.seed.body, self.ground, self.contact.x, self.contact.y, false)
+            for _, seg in pairs(self.stem) do
+                seg.fixture:setSensor(false)
+            end
+            -- self.seed.body:setAngle(-math.pi/2)
+            -- self.seed.body:setFixedRotation(true)
+            self.locked = true
+        end
+    else
+        if Input:isDown() or love.keyboard.isDown(' ') then
+            self.puff.body:applyForce(0.4, -0.4)
+        end
     end
 end
 
@@ -49,6 +70,23 @@ function Player:draw()
         love.graphics.line(x, y, x + r*math.cos(a), y + r*math.sin(a))
     end
     love.graphics.draw(Player.sprSeed, self.seed.body:getX(), self.seed.body:getY(), tailAngle, 1, 1, 2, 2)
+end
+
+function Player:collide(other)
+    local data = other:getUserData()
+    if not data or not data.name then return end
+    if data.name == 'ground' then
+        self.ground = data.body
+        self.grounded = true
+        self.contact = {
+            x = self.seed.body:getX(),
+            y = self.seed.body:getY()
+        }
+    end
+end
+
+function Player:getX()
+    return self.seed.body:getX()
 end
 
 function makeRope(world, bodyA, bodyB)
