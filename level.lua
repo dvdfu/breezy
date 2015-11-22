@@ -17,7 +17,7 @@ function Level:enter()
     self.ground.fixture = love.physics.newFixture(self.ground.body, self.ground.shape)
 
 
-    self.player = Player:new(world)
+    self.player = Player:new(world, 160, 160)
     self.cam = Camera(self.player.x, self.player.y)
     self.x = 0
 end
@@ -35,13 +35,13 @@ function Level:draw()
     self.cam:draw(function()
         local cx = self.x % (320+192) - 192
         love.graphics.draw(sprCloud, cx, 160)
-        self.player:draw()
         local gx = self.x % 80
         for i = -1, 3 do
             love.graphics.draw(sprGrass, gx + i*80, 320-16)
             love.graphics.draw(sprGroundTop, gx + i*80, 320)
             love.graphics.draw(sprGround, gx + i*80, 320+16, 0, 1, 9)
         end
+        self.player:draw()
         -- self:drawBodies()
     end)
 end

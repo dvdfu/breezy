@@ -3,6 +3,54 @@ local Player = Class('Player')
 
 Player.static.sprSeed = love.graphics.newImage('assets/images/seed.png')
 
+function Player:initialize(world, x, y)
+    self.vx, self.vy = 0.5, 0
+    self.grounded = false
+
+    self.puff = {}
+    self.puff.body = love.physics.newBody(world, x, y, 'dynamic')
+    self.puff.shape = love.physics.newCircleShape(6)
+    self.puff.fixture = love.physics.newFixture(self.puff.body, self.puff.shape, 0.1)
+
+    self.seed = {}
+    self.seed.body = love.physics.newBody(world, x, y, 'dynamic')
+    self.seed.shape = love.physics.newCircleShape(1)
+    self.seed.fixture = love.physics.newFixture(self.seed.body, self.seed.shape, 0.1)
+
+    self.stem = makeRope(world, self.puff.body, self.seed.body)
+end
+
+function Player:update(dt)
+    self.puff.body:setX(160)
+    if Input:isDown() then
+        self.puff.body:applyForce(0, -0.5)
+        self.seed.body:applyForce(-0.001, 0)
+    end
+end
+
+function Player:draw()
+    local headAngle, tailAngle = 0, 0
+    for i = 1, #self.stem-1 do
+        local seg = self.stem[i].body
+        local segNext = self.seed.body
+        segNext = self.stem[i+1].body
+        if i == 1 then
+            headAngle = math.atan2(segNext:getY()-seg:getY(), segNext:getX()-seg:getX())
+        elseif i == #self.stem-1 then
+            love.graphics.setColor(220, 180, 160)
+            tailAngle = math.atan2(segNext:getY()-seg:getY(), segNext:getX()-seg:getX())
+        end
+        love.graphics.line(seg:getX(), seg:getY(), segNext:getX(), segNext:getY())
+        love.graphics.setColor(255, 255, 255)
+    end
+    for i = 0, 6 do
+        local a, r = i/12 * 2*math.pi + headAngle + math.pi/2, 5 + math.abs(i-3)
+        local x, y = self.puff.body:getX(), self.puff.body:getY()
+        love.graphics.line(x, y, x + r*math.cos(a), y + r*math.sin(a))
+    end
+    love.graphics.draw(Player.sprSeed, self.seed.body:getX(), self.seed.body:getY(), tailAngle, 1, 1, 2, 2)
+end
+
 function makeRope(world, bodyA, bodyB)
     local function makeSegment(world, x, y, length)
         local seg = {}
@@ -13,10 +61,10 @@ function makeRope(world, bodyA, bodyB)
         return seg
     end
     local segments = {}
-    local segLength = 9
+    local segLength = 6
     local x, y = bodyA:getX(), bodyA:getY()
     local seg = {}
-    for i = 1, 4 do
+    for i = 1, 5 do
         seg = makeSegment(world, x, y + (i-1)*segLength, segLength)
         if i == 1 then
             love.physics.newRevoluteJoint(bodyA, seg.body, x, y, false)
@@ -32,47 +80,6 @@ function makeRope(world, bodyA, bodyB)
     bodyB:setPosition(x, y)
     love.physics.newRevoluteJoint(bodyB, seg.body, x, y, false)
     return segments
-end
-
-function Player:initialize(world)
-    self.x, self.y = 160, 320
-    self.vx, self.vy = 0.5, 0
-    self.grounded = false
-
-    self.puff = {}
-    self.puff.body = love.physics.newBody(world, 160, 160, 'dynamic')
-    self.puff.shape = love.physics.newCircleShape(12)
-    self.puff.fixture = love.physics.newFixture(self.puff.body, self.puff.shape, 0.1)
-    self.puff.fixture:setSensor(true)
-
-    self.seed = {}
-    self.seed.body = love.physics.newBody(world, 160, 160, 'dynamic')
-    self.seed.shape = love.physics.newCircleShape(4)
-    self.seed.fixture = love.physics.newFixture(self.seed.body, self.seed.shape, 0.1)
-
-    self.stem = makeRope(world, self.puff.body, self.seed.body)
-end
-
-function Player:update(dt)
-    self.puff.body:setX(160)
-    if Input:isDown() then
-        self.puff.body:applyForce(0, -0.5)
-        self.seed.body:applyForce(-0.01, 0)
-    end
-end
-
-function Player:draw()
-    for i = 1, #self.stem do
-        local seg = self.stem[i].body
-        local segNext = self.seed.body
-        if i < #self.stem then
-            segNext = self.stem[i+1].body
-        end
-        love.graphics.line(seg:getX(), seg:getY(), segNext:getX(), segNext:getY())
-    end
-    love.graphics.draw(Player.sprSeed, self.seed.body:getX()-4, self.seed.body:getY()-4)
-    -- love.graphics.circle('fill', self.puff.body:getX(), self.puff.body:getY(), self.puff.shape:getRadius())
-    -- love.graphics.circle('fill',  self.seed.body:getY(), self.seed.shape:getRadius())
 end
 
 return Player
