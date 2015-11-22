@@ -8,16 +8,26 @@ local sprGround = love.graphics.newImage('assets/images/ground.png')
 local sprCloud = love.graphics.newImage('assets/images/cloud.png')
 
 function Level:enter()
-    self.player = Player:new()
+    love.physics.setMeter(64) --pixels per meter
+    world = love.physics.newWorld(0, 160, true)
+    self.ground = {
+        body = love.physics.newBody(world, 160, 320 + 1),
+        shape = love.physics.newRectangleShape(320, 2)
+    }
+    self.ground.fixture = love.physics.newFixture(self.ground.body, self.ground.shape)
+
+
+    self.player = Player:new(world)
     self.cam = Camera(self.player.x, self.player.y)
     self.x = 0
 end
 
 function Level:update(dt)
+    world:update(dt)
     self.x = self.x - self.player.vx
     self.player:update(dt)
 
-    local dx, dy = self.player.x - self.cam.x, self.player.y - self.cam.y
+    local dx, dy = self.player.puff.body:getX() - self.cam.x, self.player.puff.body:getY() - self.cam.y
     self.cam:move(dx/30, dy/30)
 end
 
@@ -32,7 +42,22 @@ function Level:draw()
             love.graphics.draw(sprGroundTop, gx + i*80, 320)
             love.graphics.draw(sprGround, gx + i*80, 320+16, 0, 1, 9)
         end
+        self:drawBodies()
     end)
+end
+
+function Level:drawBodies()
+    local bodies = world:getBodyList()
+    for _, body in pairs(bodies) do
+        for _, fixture in pairs(body:getFixtureList()) do
+            local shape = fixture:getShape()
+            if shape:getType() == 'circle' then
+                love.graphics.circle('fill', body:getX(), body:getY(), shape:getRadius())
+            elseif shape:getType() == 'polygon' then
+                love.graphics.polygon('fill', body:getWorldPoints(shape:getPoints()))
+            end
+        end
+    end
 end
 
 return Level

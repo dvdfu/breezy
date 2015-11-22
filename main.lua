@@ -1,5 +1,5 @@
 love.graphics.setDefaultFilter('nearest', 'nearest')
-love.graphics.setBackgroundColor(120, 190, 220)
+love.graphics.setBackgroundColor(160, 200, 240)
 
 Gamestate = require('gamestate')
 Level = require('level')
