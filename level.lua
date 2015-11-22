@@ -9,10 +9,10 @@ local sprCloud = love.graphics.newImage('assets/images/cloud.png')
 
 function Level:enter()
     love.physics.setMeter(64) --pixels per meter
-    world = love.physics.newWorld(0, 160, true)
+    world = love.physics.newWorld(0, 16, true)
     self.ground = {
-        body = love.physics.newBody(world, 160, 320 + 1),
-        shape = love.physics.newRectangleShape(320, 2)
+        body = love.physics.newBody(world, 160, 320),
+        shape = love.physics.newRectangleShape(320, 1)
     }
     self.ground.fixture = love.physics.newFixture(self.ground.body, self.ground.shape)
 
@@ -42,7 +42,7 @@ function Level:draw()
             love.graphics.draw(sprGroundTop, gx + i*80, 320)
             love.graphics.draw(sprGround, gx + i*80, 320+16, 0, 1, 9)
         end
-        self:drawBodies()
+        -- self:drawBodies()
     end)
 end
 
