@@ -1,6 +1,5 @@
 love.graphics.setDefaultFilter('nearest', 'nearest')
 love.graphics.setLineStyle('rough')
-love.graphics.setBackgroundColor(180, 230, 255)
 
 Gamestate = require('gamestate')
 Level = require('level')

@@ -32,14 +32,13 @@ end
 function Player:update(dt)
     self.puff.body:applyForce(0, -1.8)
     if self.grounded then
-        self.seed.body:setPosition(self.contact.x, self.contact.y)
+        self.puff.body:applyForce(0, -1.8)
         if not self.locked then
-            love.physics.newRevoluteJoint(self.seed.body, self.ground, self.contact.x, self.contact.y, false)
+            love.physics.newRevoluteJoint(self.stem[#self.stem].body, self.ground, self.contact.x, self.contact.y, false)
+            self.seed.fixture:setSensor(true)
             for _, seg in pairs(self.stem) do
                 seg.fixture:setSensor(false)
             end
-            -- self.seed.body:setAngle(-math.pi/2)
-            -- self.seed.body:setFixedRotation(true)
             self.locked = true
         end
     else
